@@ -36,7 +36,9 @@ class BasketController extends Controller
         ], [
             'user_id' => $this->user->id,
             'product_id' => $newBasket['product_id'],
-            'count' => $newBasket['count']
+            'count' => $newBasket['count'],
+            'color' => $newBasket['color'],
+            'size' => $newBasket['size'],
         ]);
 
         return BasketResource::collection($this->user->baskets)->resolve();
@@ -56,7 +58,9 @@ class BasketController extends Controller
         }
 
         $basket->update([
-            'count' => $newBasket['count']
+            'count' => $newBasket['count'],
+            'color' => $newBasket['color'],
+            'size' => $newBasket['size']
         ]);
 
         $basket->refresh();

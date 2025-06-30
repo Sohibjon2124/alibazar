@@ -21,7 +21,7 @@ class CategoryController extends Controller
 
     public function products(Category $category): array
     {
-        return ProductResource::collection($category->products)->resolve();
+        return ProductResource::collection($category->products->where('status', '=', '1'))->resolve();
     }
 
     public function store(StoreRequest $storeRequest)

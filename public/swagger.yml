@@ -1,0 +1,874 @@
+openapi: 3.0.0
+info:
+  title: Shop API
+  version: 1.0.0
+  description: API документация для категорий, продуктов, корзин и заказов.
+
+servers:
+  - url: /api/v1
+
+paths:
+  # Categories
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Получить список категорий
+      operationId: getCategories
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список категорий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryResource"
+
+    post:
+      tags:
+        - Categories
+      summary: Создать категорию
+      operationId: createCategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryCreateRequest"
+      responses:
+        "201":
+          description: Категория создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryResource"
+
+  /categories/{category}:
+    put:
+      tags:
+        - Categories
+      summary: Обновить категорию
+      operationId: updateCategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category
+          in: path
+          description: ID категории
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryUpdateRequest"
+      responses:
+        "200":
+          description: Категория обновлена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryResource"
+
+  /categories/{category}/products:
+    get:
+      tags:
+        - Categories
+      summary: Получить продукты категории
+      operationId: getCategoryProducts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category
+          in: path
+          description: ID категории
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Список продуктов категории
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductResource"
+
+  # Products
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Получить список продуктов (с пагинацией)
+      operationId: getProducts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список продуктов с пагинацией
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductResource"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+    post:
+      tags:
+        - Products
+      summary: Создать продукт
+      operationId: createProduct
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductCreateRequest"
+      responses:
+        "201":
+          description: Продукт создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResource"
+
+  /products/search:
+    get:
+      tags:
+        - Products
+      summary: Поиск продуктов (с пагинацией)
+      operationId: searchProducts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Строка поиска
+      responses:
+        "200":
+          description: Результаты поиска с пагинацией
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductResource"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+  /products/promotion:
+    get:
+      tags:
+        - Products
+      summary: Получить продукты с акцией
+      operationId: getPromotionProducts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список продуктов с акцией
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductResource"
+
+  /products/{product}:
+    get:
+      tags:
+        - Products
+      summary: Получить продукт по ID
+      operationId: getProductById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product
+          in: path
+          description: ID продукта
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Информация о продукте
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResource"
+
+    post:
+      tags:
+        - Products
+      summary: Обновить продукт
+      operationId: updateProduct
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product
+          in: path
+          description: ID продукта
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductUpdateRequest"
+      responses:
+        "200":
+          description: Продукт обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResource"
+
+  /products/{product}/promotion:
+    post:
+      tags:
+        - Products
+      summary: Создать акцию для продукта
+      operationId: createProductPromotion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product
+          in: path
+          description: ID продукта
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductPromotionCreateRequest"
+      responses:
+        "201":
+          description: Акция создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductPromotionResource"
+
+    put:
+      tags:
+        - Products
+      summary: Обновить акцию продукта
+      operationId: updateProductPromotion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product
+          in: path
+          description: ID продукта
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductPromotionUpdateRequest"
+      responses:
+        "200":
+          description: Акция обновлена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductPromotionResource"
+
+  # Baskets
+  /baskets:
+    get:
+      tags:
+        - Baskets
+      summary: Получить корзины пользователя
+      operationId: getBaskets
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список корзин
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BasketResource"
+
+    post:
+      tags:
+        - Baskets
+      summary: Добавить товар в корзину
+      operationId: createBasket
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BasketCreateRequest"
+      responses:
+        "201":
+          description: Товар добавлен в корзину
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasketResource"
+
+  /baskets/{basket}:
+    put:
+      tags:
+        - Baskets
+      summary: Обновить товар в корзине
+      operationId: updateBasket
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: basket
+          in: path
+          description: ID корзины
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BasketUpdateRequest"
+      responses:
+        "200":
+          description: Товар в корзине обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasketResource"
+
+    delete:
+      tags:
+        - Baskets
+      summary: Удалить товар из корзины
+      operationId: deleteBasket
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: basket
+          in: path
+          description: ID корзины
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Товар удалён из корзины
+
+  # Orders
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Получить список заказов пользователя
+      operationId: getOrders
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список заказов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderResource"
+
+    post:
+      tags:
+        - Orders
+      summary: Создать заказ
+      operationId: createOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateRequest"
+      responses:
+        "201":
+          description: Заказ создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResource"
+
+  /orders/{order}:
+    put:
+      tags:
+        - Orders
+      summary: Обновить заказ
+      operationId: updateOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order
+          in: path
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderUpdateRequest"
+      responses:
+        "200":
+          description: Заказ обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResource"
+
+    delete:
+      tags:
+        - Orders
+      summary: Удалить заказ
+      operationId: deleteOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order
+          in: path
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Заказ удалён
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 100
+        per_page:
+          type: integer
+          example: 15
+        current_page:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 7
+        from:
+          type: integer
+          example: 1
+        to:
+          type: integer
+          example: 15
+
+    CategoryResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Food"
+
+    CategoryCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: "Food"
+
+    CategoryUpdateRequest:
+      type: object
+      required:
+        - category_id
+      properties:
+        category_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Snacks"
+        status:
+          type: integer
+          enum: [1, 2]
+          example: 1
+
+    ProductResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: "Chips"
+        price:
+          type: number
+          format: float
+          example: 12.5
+        category_id:
+          type: integer
+          example: 2
+        count:
+          type: integer
+          example: 100
+        image:
+          type: string
+          example: "products/chips.png"
+        description:
+          type: string
+          example: "Crunchy potato chips"
+        promotion_price:
+          type: number
+          nullable: true
+          example: 9.99
+        on_basket:
+          type: integer
+          example: 1
+        status:
+          type: integer
+          example: 1
+
+    ProductCreateRequest:
+      type: object
+      required:
+        - name
+        - price
+        - category_id
+        - count
+        - image
+        - description
+        - colors
+        - sizes
+      properties:
+        name:
+          type: string
+          example: "Chips"
+        price:
+          type: number
+          format: float
+          example: 12.5
+        category_id:
+          type: integer
+          example: 2
+        count:
+          type: integer
+          example: 100
+        image:
+          type: string
+          format: binary
+        description:
+          type: string
+          example: "Crunchy potato chips"
+        colors:
+          type: array
+          items:
+            type: string
+          style: form
+          explode: true
+          description: Array of colors (e.g., red, blue)
+          example:
+            - red
+            - blue
+        sizes:
+          type: array
+          items:
+            type: string
+          style: form
+          explode: true
+          description: Array of sizes (e.g., S, M, L)
+          example:
+            - S
+            - M
+            - L
+
+    ProductUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/ProductCreateRequest"
+        - type: object
+          required:
+            - id
+            - status
+          properties:
+            id:
+              type: integer
+              example: 10
+            _method:
+              type: string
+              example: "PUT"
+            status:
+              type: string
+              enum: ["1", "2"]
+              example: "1"
+
+    ProductPromotionCreateRequest:
+      type: object
+      required:
+        - product_id
+        - price
+        - end_date
+      properties:
+        product_id:
+          type: integer
+          example: 10
+        price:
+          type: number
+          format: float
+          example: 9.99
+        end_date:
+          type: string
+          format: date
+          example: "2025-06-30"
+
+    ProductPromotionUpdateRequest:
+      type: object
+      required:
+        - product_id
+        - price
+        - end_date
+      properties:
+        product_id:
+          type: integer
+          example: 10
+        price:
+          type: number
+          format: float
+          example: 8.99
+        end_date:
+          type: string
+          format: date
+          example: "2025-07-15"
+
+    ProductPromotionResource:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          example: 10
+        price:
+          type: number
+          format: float
+          example: 9.99
+        end_date:
+          type: string
+          format: date
+          example: "2025-06-30"
+
+    BasketResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        product:
+          $ref: "#/components/schemas/ProductResource"
+        count:
+          type: integer
+          example: 2
+
+    BasketCreateRequest:
+      type: object
+      required:
+        - product_id
+        - count
+      properties:
+        product_id:
+          type: integer
+          example: 10
+        count:
+          type: integer
+          example: 2
+        color:
+          type: string
+          example: "red"
+          description: "Optional color selection"
+        size:
+          type: string
+          example: "M"
+          description: "Optional size selection"
+
+    BasketUpdateRequest:
+      type: object
+      required:
+        - id
+        - count
+      properties:
+        count:
+          type: integer
+          example: 5
+        color:
+          type: string
+          example: "red"
+        size:
+          type: string
+          example: "XL"
+
+    OrderProductsResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        count:
+          type: integer
+          example: 3
+
+    OrderResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 100
+        user_id:
+          type: integer
+          example: 5
+        delivery_type:
+          type: integer
+          example: 1
+          description: "1 или 2"
+        delivery_price:
+          type: number
+          format: float
+          example: 15.50
+        status:
+          type: integer
+          example: 2
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderProductsResource"
+
+    OrderCreateRequest:
+      type: object
+      required:
+        - delivery_type
+        - delivery_address
+        - products
+      properties:
+        delivery_type:
+          type: integer
+          enum: [1, 2]
+          example: 1
+          description: "Тип доставки: 1 или 2"
+        delivery_address:
+          type: string
+          example: "ул. Ленина, 12"
+          description: "Адрес доставки"
+        products:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - count
+            properties:
+              id:
+                type: integer
+                example: 10
+                description: "ID продукта"
+              count:
+                type: integer
+                minimum: 0
+                example: 3
+                description: "Количество продукта"
+              size:
+                type: string
+                example: "M"
+                description: "Размер продукта (опционально)"
+              color:
+                type: string
+                example: "red"
+                description: "Цвет продукта (опционально)"
+
+    OrderUpdateRequest:
+      type: object
+      required:
+        - order_id
+        - delivery_type
+        - delivery_address
+        - status_id
+        - products
+      properties:
+        delivery_type:
+          type: integer
+          enum: [1, 2]
+          example: 1
+        delivery_address:
+          type: string
+          example: "ул. Ленина, 12"
+        status_id:
+          type: integer
+          example: 2
+        delivery_price:
+          type: number
+          format: float
+          example: 15.50
+        products:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - count
+            properties:
+              id:
+                type: integer
+                example: 10
+              count:
+                type: integer
+                minimum: 0
+                example: 3
+              color:
+                type: string
+                example: "blue"
+              size:
+                type: string
+                example: "XXLL"

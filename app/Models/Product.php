@@ -13,7 +13,7 @@ class Product extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'price', 'category_id', 'count', 'image', 'description'];
+    protected $fillable = ['name', 'price', 'category_id', 'count', 'image', 'description', 'status'];
 
     public function category(): BelongsTo
     {
@@ -29,5 +29,14 @@ class Product extends Model
     {
         return $this->hasOne(ProductPromotion::class)
             ->where('end_date', '>=', Carbon::now());
+    }
+
+    public function colors(): HasMany
+    {
+        return $this->hasMany(ProductColor::class);
+    }
+    public function sizes(): HasMany
+    {
+        return $this->hasMany(ProductSize::class);
     }
 }

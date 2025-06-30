@@ -9,6 +9,8 @@ use App\Http\Requests\Api\V1\Products\Request as ProductsRequest;
 use App\Http\Requests\Api\V1\Products\SearchRequest;
 use App\Http\Resources\Api\V1\ProductResource;
 use App\Models\Product;
+use App\Models\ProductColor;
+use App\Models\ProductSize;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -19,7 +21,8 @@ class ProductController extends Controller
         $data = $request->validated();
         $perPage = $data['per_page'] ?? 20;
 
-        $products = Product::paginate($perPage);
+        $products = Product::where('status', '=', '1')
+            ->paginate($perPage);
 
         return response()->json([
             'data' => ProductResource::collection($products->items()),
@@ -41,7 +44,8 @@ class ProductController extends Controller
         $searchItem = $data['search'];
         $perPage = $data['per_page'] ?? 20;
 
-        $products = Product::where('name', 'like', '%' . $searchItem . '%')
+        $products = Product::where('status', '=', '1')
+            ->where('name', 'like', '%' . $searchItem . '%')
             ->orWhere('description', 'like', '%' . $searchItem . '%')
             ->paginate($perPage);
 
@@ -59,22 +63,81 @@ class ProductController extends Controller
     }
     public function store(StoreRequest $request): array
     {
-        $newProduct = $request->validated();
-        $producut = Product::create($newProduct);
+        //TODo transaction
 
-        return ProductResource::make($producut)->resolve();
+        $data = $request->validated();
+
+        $sizes = explode(',', $data['sizes']);
+        $colors = explode(',', $data['colors']);
+
+        unset($data['sizes']);
+        unset($data['colors']);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public'); // storage/app/public/products
+            $data['image'] = $path;
+        }
+
+        $data['status'] = '1';
+
+        $product = Product::create($data);
+
+        foreach ($sizes as $size) {
+            ProductSize::create([
+                'product_id' => $product->id,
+                'size' => $size
+            ]);
+        }
+
+        foreach ($colors as $color) {
+            ProductColor::create([
+                'product_id' => $product->id,
+                'color' => $color
+            ]);
+        }
+
+        return ProductResource::make($product)->resolve();
     }
 
     public function show(Product $product): array
     {
-        return ProductResource::make($product)->resolve();
+        return ProductResource::make($product->where('status', '=', '1'))->resolve();
     }
 
     public function update(UpdateRequest $request): array
     {
-        $updatedProduct = $request->validated();
-        $product = Product::find($updatedProduct['id']);
-        $product->update($updatedProduct);
+        $data = $request->validated();
+        $product = Product::find($data['id']);
+
+        $sizes = explode(',', $data['sizes']);
+        $colors = explode(',', $data['colors']);
+
+        unset($data['sizes']);
+        unset($data['colors']);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public'); // storage/app/public/products
+            $data['image'] = $path;
+        }
+
+        $product->update($data);
+
+        $product->sizes()->delete();
+        foreach ($sizes as $size) {
+            $product->sizes()->create([
+                'product_id' => $product->id,
+                'size' => $size
+            ]);
+        }
+
+        $product->colors()->delete();
+        foreach ($colors as $color) {
+            $product->colors()->create([
+                'product_id' => $product->id,
+                'color' => $color
+            ]);
+        }
+
         $product->refresh();
 
         return ProductResource::make($product)->resolve();

@@ -24,3 +24,9 @@ Homestead.yaml
 npm-debug.log
 Thumbs.db
 yarn-error.log
+/storage/*.log
+/storage/*.txt
+/storage/debugbar
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*

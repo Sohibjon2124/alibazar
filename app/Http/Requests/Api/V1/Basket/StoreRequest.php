@@ -23,7 +23,9 @@ class StoreRequest extends FormRequest
     {
         return [
             'product_id' => 'required|integer|exists:products,id',
-            'count' => 'required|integer'
+            'count' => 'required|integer',
+            'color' => 'string',
+            'size' => 'string'
         ];
     }
 }

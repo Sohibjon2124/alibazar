@@ -42,7 +42,9 @@ class OrderController extends Controller
                     $orderProduct['id'],
                     [
                         'count' => $orderProduct['count'],
-                        'price' => $product->price * $orderProduct['count']
+                        'price' => $product->price * $orderProduct['count'],
+                        'color' => $orderProduct['color'],
+                        'size' => $orderProduct['size']
                     ]
                 );
             }
@@ -65,7 +67,8 @@ class OrderController extends Controller
                 $order->update([
                     'delivery_type' => $newOrder['delivery_type'],
                     'delivery_price' => $newOrder['delivery_price'] ?? 0,
-                    'delivery_address' => $newOrder['delivery_address']
+                    'delivery_address' => $newOrder['delivery_address'],
+                    'order_status_id' => $newOrder['status_id']
                 ]);
 
                 $syncData = [];
@@ -75,7 +78,9 @@ class OrderController extends Controller
                     $product = Product::findOrFail($orderProduct['id']);
                     $syncData[$product->id] = [
                         'count' => $orderProduct['count'],
-                        'price' => $product->price * $orderProduct['count']
+                        'price' => $product->price * $orderProduct['count'],
+                        'color' => $orderProduct['color'],
+                        'size' => $orderProduct['size']
                     ];
                 }
 

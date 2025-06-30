@@ -22,8 +22,11 @@ class ProductResource extends JsonResource
             'count' => $this->count,
             'image' => $this->image,
             'description' => $this->description,
-            'promotion_price' => $this->promotion != null ? $this->promotion->price : '' ,
-            'on_basket'=> auth()->user()->baskets()->where('product_id',$this->id)->first()?->count ?? 0
+            'promotion_price' => $this->promotion != null ? $this->promotion->price : '',
+            'on_basket' => auth()->user()->baskets()->where('product_id', $this->id)->first()?->count ?? 0,
+            'status' => $this->status,
+            'colors' => ProductColorResource::collection($this->colors)->resolve(),
+            'sizes' => ProductSizeResource::collection($this->sizes)->resolve(),
         ];
     }
 }

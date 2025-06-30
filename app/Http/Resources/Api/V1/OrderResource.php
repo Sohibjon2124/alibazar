@@ -19,7 +19,7 @@ class OrderResource extends JsonResource
             'user_id' => $this->user_id,
             'delivery_type' => $this->delivery_type,
             'delivery_price' => $this->delivery_price,
-            'status' => $this->status->name,
+            'status' => $this->status->id,
             'products' => OrderProductsResource::collection($this->products)
         ];
     }

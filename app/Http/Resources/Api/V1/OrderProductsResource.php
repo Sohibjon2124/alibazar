@@ -20,6 +20,8 @@ class OrderProductsResource extends JsonResource
             'price' => $this->price,                  // цена продукта (из products)
             'count' => $this->pivot->count,           // количество в заказе (из pivot)
             'order_price' => $this->pivot->price,     // цена в заказе (из pivot)
+            'color' => $this->pivot->color,
+            'size' => $this->pivot->size,
         ];
     }
 }

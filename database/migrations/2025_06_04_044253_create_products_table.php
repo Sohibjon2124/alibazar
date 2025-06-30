@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('count');
             $table->string('image');
             $table->text('description');
-
+            $table->enum('status',['1','2']);
             $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();
             $table->softDeletes();

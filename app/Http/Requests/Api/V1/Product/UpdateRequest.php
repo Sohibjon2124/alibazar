@@ -24,12 +24,15 @@ class UpdateRequest extends FormRequest
     {
         return [
             'id' => 'required|integer|exists:products,id',
-            'name' => 'required',
+            'name' => 'required|string',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|integer|exists:categories,id',
             'count' => 'required|integer',
-            'image' => 'required|string',
-            'description' => 'required|string'
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'description' => 'required|string',
+            'status' => 'required|string|in:1,2',
+            'colors' => 'string',
+            'sizes' => 'string',
         ];
     }
 

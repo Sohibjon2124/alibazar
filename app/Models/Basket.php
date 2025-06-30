@@ -11,7 +11,7 @@ class Basket extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'product_id', 'count'];
+    protected $fillable = ['user_id', 'product_id', 'count','color','size'];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

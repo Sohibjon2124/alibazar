@@ -24,7 +24,9 @@ class UpdateRequest extends FormRequest
     {
         return [
             'id' => 'required|integer|exists:baskets,id',
-            'count' => 'required|integer'
+            'count' => 'required|integer',
+            'color' => 'string',
+            'size' => 'string'
         ];
     }
 

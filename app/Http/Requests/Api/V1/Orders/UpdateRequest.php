@@ -28,10 +28,13 @@ class UpdateRequest extends FormRequest
                 'order_id' => ['required', 'integer', Rule::exists('orders', 'id')->whereNull('deleted_at')],
                 'delivery_type' => 'required|in:1,2',
                 'delivery_address' => 'required|string',
+                'status_id' => 'required|integer|exists:order_statuses,id',
                 'delivery_price' => 'numeric',
                 'products' => 'required|array|min:1',
                 'products.*.id' => 'integer|exists:products,id',
                 'products.*.count' => 'required|integer|min:0',
+                'products.*.color' => 'string',
+                'products.*.size' => 'string',
             ];
     }
 

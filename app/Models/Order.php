@@ -11,7 +11,7 @@ class Order extends Model
 {
     use SoftDeletes;
 
-    protected $fillable=['user_id','delivery_type','delivery_price','order_status_id', 'delivery_address'];
+    protected $fillable=['user_id','delivery_type','delivery_price','order_status_id', 'delivery_address', 'color', 'size'];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -29,6 +29,6 @@ class Order extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'order_products')->withPivot('price', 'count');
+        return $this->belongsToMany(Product::class, 'order_products')->withPivot('price', 'count', 'color', 'size');
     }
 }

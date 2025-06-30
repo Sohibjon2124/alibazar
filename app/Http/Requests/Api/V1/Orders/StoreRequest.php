@@ -27,6 +27,8 @@ class StoreRequest extends FormRequest
             'products' => 'required|array|min:1',
             'products.*.id' => 'integer|exists:products,id',
             'products.*.count' => 'required|integer|min:0',
+            'products.*.size' => 'string',
+            'products.*.color' => 'string',
         ];
     }
 }

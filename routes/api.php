@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\PromotionProductController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -23,20 +22,19 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('categories')->group(function () {
             Route::get('/', [CategoryController::class, 'index']);
-            Route::post('/', [CategoryController::class, 'store']);
+            Route::post('/', [CategoryController::class, 'store'])->middleware('admin');
 
             Route::prefix('{category}')->group(function () {
-                Route::put('/', [CategoryController::class, 'update']);
+                Route::put('/', [CategoryController::class, 'update'])->middleware('admin');
                 Route::get('/products', [CategoryController::class, 'products']);
             });
         });
 
         Route::prefix('products')->group(function () {
 
-            Route::post('/', [ProductController::class, 'store']);
+            Route::post('/', [ProductController::class, 'store'])->middleware('admin');
             Route::get('/', [ProductController::class, 'index']);
             Route::get('/search', [ProductController::class, 'search']);
-
 
             Route::prefix('promotion')->group(function () {
                 Route::get('/', [PromotionProductController::class, 'index']);
@@ -45,11 +43,11 @@ Route::prefix('v1')->group(function () {
             Route::prefix('{product}')->group(function () {
 
                 Route::get('/', [ProductController::class, 'show']);
-                Route::put('/', [ProductController::class, 'update']);
+                Route::put('/', [ProductController::class, 'update'])->middleware('admin');
 
                 Route::prefix('promotion')->group(function () {
-                    Route::post('/', [PromotionProductController::class, 'store']);
-                    Route::put('/', [PromotionProductController::class, 'update']);
+                    Route::post('/', [PromotionProductController::class, 'store'])->middleware('admin');
+                    Route::put('/', [PromotionProductController::class, 'update'])->middleware('admin');
                 });
             });
         });
@@ -73,5 +71,10 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/', [OrderController::class, 'delete']);
             });
         });
+
+        Route::middleware('admin')->prefix('admin')->group(function(){
+
+        });
+
     });
 });
