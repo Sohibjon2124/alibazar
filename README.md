@@ -44,10 +44,10 @@
 
 Login
     POST http://127.0.0.1:8000/api/v1/auth/login
-        {
-            "email": "john@example.com",
-            "password": "secret123"
-        }
+      {
+        "tel": "+992929614112",
+        "password": "secret123"
+      }
 
 Refresh
     POST http://127.0.0.1:8000/api/auth/refresh
