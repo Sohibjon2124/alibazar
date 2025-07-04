@@ -72,9 +72,10 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::middleware('admin')->prefix('admin')->group(function(){
-
-        });
-
+        Route::middleware('admin')->prefix('admin')->group(function () {});
     });
+});
+
+Route::get('/test', function () {
+    dd(1111111);
 });
