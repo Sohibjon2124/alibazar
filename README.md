@@ -24,7 +24,7 @@
 
 Запустите миграции и начальные данные:
 
-    docker exec -it laravel-roadrunner php artisan migrate --seed
+    docker exec -it laravel-roadrunner php artisan migrate
 
 🌐 Доступ к сервисам
     Laravel (Swagger):

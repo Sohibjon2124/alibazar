@@ -66,7 +66,8 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $user = auth()->user();
+        // $user = auth()->user();
+        $user = JWTAuth::user();
 
         // Генерация refresh token
         $refreshToken = Str::random(64);
