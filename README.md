@@ -8,7 +8,7 @@
 
 1. **Соберите и запустите контейнеры:**
 
-   docker-compose up -d --build
+   docker-compose up -d --build 
 
 Создайте .env файл:
 

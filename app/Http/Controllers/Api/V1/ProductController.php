@@ -101,7 +101,10 @@ class ProductController extends Controller
 
     public function show(Product $product): array
     {
-        return ProductResource::make($product->where('status', '=', '1'))->resolve();
+        if ($product->status !== '1') {
+            abort(404);
+        }
+        return ProductResource::make($product)->resolve();
     }
 
     public function update(UpdateRequest $request): array

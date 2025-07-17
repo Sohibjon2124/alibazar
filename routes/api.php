@@ -43,6 +43,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('{product}')->group(function () {
 
                 Route::get('/', [ProductController::class, 'show']);
+         
                 Route::put('/', [ProductController::class, 'update'])->middleware('admin');
 
                 Route::prefix('promotion')->group(function () {
