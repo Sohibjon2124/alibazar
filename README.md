@@ -24,7 +24,7 @@
 
 Запустите миграции и начальные данные:
 
-    docker exec -it laravel-roadrunner php artisan migrate
+    docker exec -it laravel-roadrunner php artisan migrate --seed
 
 
 Pull қилиш учун:
