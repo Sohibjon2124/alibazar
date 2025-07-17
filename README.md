@@ -26,6 +26,11 @@
 
     docker exec -it laravel-roadrunner php artisan migrate
 
+
+Pull қилиш учун:
+    git pull
+тамом ишлаши керак
+
 🌐 Доступ к сервисам
     Laravel (Swagger):
         👉 http://localhost:8000

@@ -78,5 +78,5 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::get('/test', function () {
-    dd(2222);
+    dd('v1');
 });
