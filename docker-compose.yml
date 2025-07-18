@@ -6,9 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: laravel-roadrunner
-    volumes:
-      - .:/var/www
-      - vendor:/var/www/vendor
+
     ports:
       - "8000:8080"
     depends_on:
@@ -39,6 +37,3 @@ services:
       - "8081:80"
     depends_on:
       - db
-
-volumes:
-  vendor:

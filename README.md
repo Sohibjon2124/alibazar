@@ -24,12 +24,14 @@
 
 Запустите миграции и начальные данные:
 
+    docker exec -it laravel-roadrunner php artisan migrate
+
+    Регистрация пользователя http://127.0.0.1:8000/api/v1/auth/register
+
+Запустите миграции и начальные данные:
+
     docker exec -it laravel-roadrunner php artisan migrate --seed
 
-
-Pull қилиш учун:
-    git pull
-тамом ишлаши керак
 
 🌐 Доступ к сервисам
     Laravel (Swagger):

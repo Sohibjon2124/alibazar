@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-docker
+WORKDIR /var/www
+COPY . .
 
 # Laravel + Octane
 RUN composer install --no-interaction --optimize-autoloader \
