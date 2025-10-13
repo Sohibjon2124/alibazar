@@ -375,6 +375,8 @@ paths:
       tags:
         - Baskets
       summary: Удалить товар из корзины
+      produces:
+        - application/json
       operationId: deleteBasket
       security:
         - bearerAuth: []
@@ -388,6 +390,14 @@ paths:
       responses:
         "200":
           description: Товар удалён из корзины
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Товар удалён"
 
   # Orders
   /orders:

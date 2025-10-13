@@ -17,9 +17,9 @@ class BasketController extends Controller
 
     private $user;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
-        $this->user = auth()->user();
+        $this->user = $request->user();
     }
     public function index(): array
     {

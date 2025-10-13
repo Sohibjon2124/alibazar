@@ -3,49 +3,31 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Services\AuthService;
+use App\Http\Services\UserService;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
+// use Tymon\JWTAuth\Facades\JWTAuth;
+// use Tymon\JWTAuth\JWTAuth\JWTAuth;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
 
-    public function register(Request $request)
+    private $authService;
+    public function __construct(AuthService $authService)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'tel' => 'required|string|max:255|unique:users,tel_number',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $user = User::create([
-            'name' => $request->name,
-            'tel_number' => $request->tel,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // Автоматически логиним
-        $token = JWTAuth::fromUser($user);
-
-        // Генерируем refresh token
-        $refreshToken = Str::random(64);
-        $user->refresh_token = hash('sha256', $refreshToken);
-        $user->refresh_token_expires_at = now()->addDays(7);
-        $user->save();
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'refresh_token' => $refreshToken
-        ]);
+        $this->authService = $authService;
+    }
+    public function register(RegisterRequest $request)
+    {
+        return response()->json($this->authService->register($request), 201);
     }
 
 
@@ -56,62 +38,13 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-
-        $credentials = [
-            'tel_number' => $request->tel, 
-            'password' => $request->password,
-        ];
-
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        // $user = auth()->user();
-        $user = JWTAuth::user();
-
-        // Генерация refresh token
-        $refreshToken = Str::random(64);
-        $user->refresh_token = hash('sha256', $refreshToken);
-        $user->refresh_token_expires_at = now()->addDays(7);
-        $user->save();
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'refresh_token' => $refreshToken
-        ]);
+        return response()->json($this->authService->login($request));
     }
 
     public function refresh(Request $request)
     {
-        $refreshToken = $request->input('refresh_token');
-
-        $user = User::where('refresh_token', hash('sha256', $refreshToken))
-            ->where('refresh_token_expires_at', '>', now())
-            ->first();
-
-        if (!$user) {
-            return response()->json(['error' => 'Invalid refresh token'], 401);
-        }
-
-        // Генерируем новый refresh token
-        $newRefreshToken = Str::random(64);
-        $user->refresh_token = hash('sha256', $newRefreshToken);
-        $user->refresh_token_expires_at = now()->addDays(7);
-        $user->save();
-
-        // Генерируем новый access token
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'refresh_token' => $newRefreshToken
-        ]);
+        return response()->json($this->authService->refresh($request));
     }
-
 
 
     /**
@@ -129,31 +62,8 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout(Request $request)
+    public function logout()
     {
-        $user = auth()->user();
-        $user->refresh_token = null;
-        $user->refresh_token_expires_at = null;
-        $user->save();
-
-        auth()->logout();
-
-        return response()->json(['message' => 'Logged out successfully']);
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
+        return $this->authService->logout();
     }
 }
