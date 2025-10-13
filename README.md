@@ -12,25 +12,25 @@
 
 Создайте .env файл:
 
-    docker exec -it laravel-roadrunner cp .env.example .env
+    docker exec -it laravel-apache cp .env.example .env
     
 Установите зависимости:
 
-    docker exec -it laravel-roadrunner composer install
+    docker exec -it laravel-apache composer install
 
 Сгенерируйте ключ приложения:
 
-    docker exec -it laravel-roadrunner php artisan key:generate
+    docker exec -it laravel-apache php artisan key:generate
 
 Запустите миграции и начальные данные:
 
-    docker exec -it laravel-roadrunner php artisan migrate
+    docker exec -it laravel-apache php artisan migrate
 
     Регистрация пользователя http://127.0.0.1:8000/api/v1/auth/register
 
 Запустите миграции и начальные данные:
 
-    docker exec -it laravel-roadrunner php artisan migrate --seed
+    docker exec -it laravel-apache php artisan migrate --seed
 
 
 🌐 Доступ к сервисам
