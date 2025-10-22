@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Events\UserRegistered;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Hash;
@@ -23,6 +24,7 @@ class AuthService
     {
         $user = $this->userService->create($request);
 
+        event(new UserRegistered($user));
         // Автоматически логиним
         $token = JWTAuth::fromUser($user);
 
@@ -52,10 +54,10 @@ class AuthService
         $refreshToken = $this->generateToken($user);
 
         return [
-            'user'=>[
-                'id'=>$user->id,
-                'name'=>$user->name,
-                'tel_number'=>$user->tel_number
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'tel_number' => $user->tel_number
             ],
             'access_token' => $token,
             'token_type' => 'bearer',
