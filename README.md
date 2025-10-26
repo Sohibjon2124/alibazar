@@ -35,7 +35,7 @@
 
 🌐 Доступ к сервисам
     Laravel (Swagger):
-        👉 http://localhost:8000
+        👉 http://local host:8000
 
     phpMyAdmin:
         👉 http://localhost:8081
