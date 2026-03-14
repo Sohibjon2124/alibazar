@@ -7,44 +7,41 @@ use App\Http\Requests\Api\V1\Category\StoreRequest;
 use App\Http\Requests\Api\V1\Category\UpdateRequest;
 use App\Http\Resources\Api\V1\CategoryResource;
 use App\Http\Resources\Api\V1\ProductResource;
+use App\Http\Services\Api\V1\CategoryService;
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
-    public function index(): array
+    private CategoryService $categoryService;
+    public function __construct(CategoryService $categoryService)
     {
-        $categories = Category::where('status', '=', '1')->get();
-        return CategoryResource::collection($categories)->resolve();
+        $this->categoryService = $categoryService;
+    }
+    public function index(): JsonResponse
+    {
+        return response()->json($this->categoryService->index());
     }
 
-    public function products(Category $category): array
+    public function products(Category $category): JsonResponse
     {
-        return ProductResource::collection($category->products->where('status', '=', '1'))->resolve();
+        return response()->json($this->categoryService->products($category));
     }
 
     public function store(StoreRequest $storeRequest)
     {
-        $newCategory = $storeRequest->validated();
-
-        $category = Category::create([
-            'name' => $newCategory['name'],
-            'status' => '1'
-        ]);
+        $category = $this->categoryService->store($storeRequest);
 
         return CategoryResource::make($category)->resolve();
     }
 
     public function update(UpdateRequest $request)
     {
-        $newCategory = $request->validated();
-        $category = Category::find($newCategory['category_id']);
 
-        $category->update([
-            'name' => $newCategory['name'],
-            'status' => $newCategory['status']
-        ]);
+        $category = $this->categoryService->find($request);
+        
+        $this->categoryService->update($category, $request);
 
         $category->refresh();
 

@@ -3,6 +3,9 @@
 namespace App\Http\Services;
 
 use App\Events\UserRegistered;
+use App\Http\Repositories\UserRepositoryInterface;
+use App\Http\Requests\Api\V1\LoginRequest;
+use App\Http\Requests\Api\V1\RegisterRequest;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Hash;
@@ -13,16 +16,17 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthService
 {
-    private $userService;
+    private $users;
 
-    public function __construct(UserService $userService)
+
+    public function __construct(UserRepositoryInterface $users)
     {
-        $this->userService = $userService;
+        $this->users = $users;
     }
 
-    public function register($request)
+    public function register(RegisterRequest $request)
     {
-        $user = $this->userService->create($request);
+        $user = $this->users->create($request);
 
         event(new UserRegistered($user));
         // Автоматически логиним
@@ -38,7 +42,7 @@ class AuthService
         ];
     }
 
-    public function login($request)
+    public function login(LoginRequest $request)
     {
         $credentials = [
             'tel_number' => $request->tel,
@@ -46,7 +50,7 @@ class AuthService
         ];
 
         if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return ['error' => 'Unauthorized', 'status' => 401];
         }
 
         // $user = auth()->user();
@@ -70,12 +74,10 @@ class AuthService
     {
         $refreshToken = $request->input('refresh_token');
 
-        $user = User::where('refresh_token', hash('sha256', $refreshToken))
-            ->where('refresh_token_expires_at', '>', now())
-            ->first();
+        $user = $this->users->findByValidRefreshToken($refreshToken);
 
         if (!$user) {
-            return response()->json(['error' => 'Invalid refresh token'], 401);
+            return ['error' => 'Invalid refresh token', 'status' => 401];
         }
 
         $refreshToken = $this->generateToken($user);

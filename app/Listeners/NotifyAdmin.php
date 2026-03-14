@@ -7,7 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
-class SendWelcomeMessage
+
+class NotifyAdmin
 {
     /**
      * Create the event listener.
@@ -24,6 +25,6 @@ class SendWelcomeMessage
     {
         $user = $event->user;
         // sleep(10);
-        Log::info("Hush kelibsiz $user->name");
+        Log::info("Notify $user->name");
     }
 }

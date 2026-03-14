@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Facades\AuthService as FacadesAuthService;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\Api\V1\LoginRequest;
+use App\Http\Requests\Api\V1\RegisterRequest;
 use App\Http\Services\AuthService;
 use App\Http\Services\UserService;
 use Illuminate\Http\Request;
@@ -28,6 +30,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         return response()->json($this->authService->register($request), 201);
+        // return response()->json(FacadesAuthService::register($request), 201);
     }
 
 
@@ -36,9 +39,10 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         return response()->json($this->authService->login($request));
+        // return response()->json(FacadesAuthService::login($request));
     }
 
     public function refresh(Request $request)
